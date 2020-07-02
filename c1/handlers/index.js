@@ -1,7 +1,7 @@
-const students = [
-  { fname: "Pero", lname: "Perovski", gpa: 9.2 },
-  { fname: "Stanko", lname: "Stankovski", gpa: 7.0 },
-  { fname: "Janko", lname: "Jankovski", gpa: 6.1 },
+var students = [
+  { id: 1, fname: "Pero", lname: "Perovski", gpa: 9.2 },
+  { id: 2, fname: "Stanko", lname: "Stankovski", gpa: 7.0 },
+  { id: 3, fname: "Janko", lname: "Jankovski", gpa: 6.1 },
 ];
 
 const getAllStudents = (req, res) => {
@@ -17,48 +17,40 @@ const getSingleStudent = (req, res) => {
 
 const createStudent = (req, res) => {
   if (req.body) {
-    students.push(req.body);
+    students.push({
+      ...req.body,
+      id: students[students.length - 1].id + 1
+    });
     return res.status(201).send("ok");
   }
   res.status(400).send("Bad Request");
 };
 
 const removeStudent = (req, res) => {
-  if (students[req.params.id] !== undefined) {
-    const student = students[req.params.id];
-    students.splice(req.params.id, 1);
-    return res.status(200).send({
-      message: "Student deleted",
-      student: student,
-    });
-  }
-  return res.status(404).send("Not Found");
+  students = students.filter(e => e.id != parseInt(req.params.id));
+  return res.status(204).send();
 };
 
 const updateStudent = (req, res) => {
-  if (students[req.params.id] !== undefined) {
-    students[req.params.id] = req.body;
-    return res.status(200).send({
-      message: "Student updated",
-      student: students[req.params.id],
-    });
-  }
-  return res.status(404).send("Not Found");
+  students = students.map(s => {
+    if (s.id === parseInt(req.params.id)) {
+      let d = { ...req.body, id: parseInt(req.params.id) }
+      return d;
+    }
+    return s;
+  });
+  return res.status(204).send();
 };
 
 const patchStudent = (req, res) => {
-  if (students[req.params.id] !== undefined) {
-    students[req.params.id] = {
-      'fname': req.body.fname ? req.body.fname : students[req.params.id].fname,
-      'lname': req.body.lname ? req.body.lname : students[req.params.id].lname,
-      'gpa': req.body.gpa ? req.body.gpa : students[req.params.id].gpa
+  students = students.map(s => {
+    if (s.id === parseInt(req.params.id)) {
+      let d = { ...s, ...req.body, id: parseInt(req.params.id) }
+      return d;
     }
-    return res.status(200).send({
-      message: "Student patched",
-      student: students[req.params.id],
-    });
-  }
-  return res.status(404).send("Not Found");
+    return s;
+  });
+  return res.status(204).send();
 };
 
 module.exports = {
