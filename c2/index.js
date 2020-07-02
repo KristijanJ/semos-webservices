@@ -32,3 +32,69 @@ const fs = require('fs');
 //   console.log('File deleted');
 // });
 
+/* PROMISES */
+
+const writeFile = (filename, data) => {
+  return new Promise((success, fail) => {
+    fs.writeFile(filename, data, (err) => {
+      if (err) {
+        return fail(err);
+      }
+      return success();
+    });
+  });
+}
+
+const appendFile = (filename, data) => {
+  return new Promise((success, fail) => {
+    fs.appendFile(filename, data, (err) => {
+      if (err) {
+        return fail(err);
+      }
+      return success();
+    });
+  });
+}
+
+const readFile = (filename) => {
+  return new Promise((success, fail) => {
+    fs.readFile(filename, 'utf8', (err, data) => {
+      if (err) {
+        return fail(err);
+      }
+      return success(data);
+    });
+  });
+}
+
+const unlinkFile = (filename) => {
+  return new Promise((success, fail) => {
+    fs.unlink(filename, (err) => {
+      if (err) {
+        return fail(err);
+      }
+      return success();
+    });
+  });
+}
+
+writeFile('test.txt', 'Hello World')
+  .then(() => {
+    console.log('Write successful!');
+    return appendFile('test.txt', ' Helloz!');
+  })
+  .then(() => {
+    console.log('Append successful!');
+    return readFile('test.txt');
+  })
+  .then((data) => {
+    console.log('Read successful!');
+    console.log(data);
+    return unlinkFile('test.txt');
+  })
+  .then(() => {
+    console.log('File deleted');
+  })
+  .catch((err) => {
+    console.error(err);
+  });
