@@ -48,9 +48,11 @@ const login = (req, res) => {
         throw { message: "Bad request", code: 400 };
       }
       let payload = {
+        uid: u[0]._id,
         name: `${u[0].first_name} ${u[0].last_name}`,
         email: u[0].email,
         iat: parseInt(new Date().getTime() / 1000),
+        exp: parseInt((new Date().getTime() + (1 * 60 * 1000)) / 1000)
       };
       let token = jwt.sign(payload, config.get("server").key);
       res.status(200).send({ token: token });
@@ -66,7 +68,15 @@ const logout = (req, res) => {
 };
 
 const refresh = (req, res) => {
-  res.status(200).send("ok");
+  let payload = {
+    uid: req.user.uid,
+    name: req.user.name,
+    email: req.user.name,
+    iat: parseInt(new Date().getTime() / 1000),
+    exp: parseInt((new Date().getTime() + (1 * 60 * 1000)) / 1000)
+  };
+  let token = jwt.sign(payload, config.get("server").key);
+  res.status(200).send({ token: token });
 };
 
 module.exports = {
