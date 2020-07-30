@@ -25,7 +25,7 @@ const createUser = (data) => {
 
 const getUserByEmail = (email) => {
   return new Promise((success, fail) => {
-    User.find({email: email}, (err, data) => {
+    User.findOne({email: email}, (err, data) => {
       if (err) {
         return fail(err);
       }
